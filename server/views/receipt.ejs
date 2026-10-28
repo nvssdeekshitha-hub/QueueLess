@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QueueLess — Appointment Token Receipt</title>
+  <style>
+    :root {
+      --primary: #1e40af;
+      --primary-light: #eff6ff;
+      --text: #1f2937;
+      --text-muted: #6b7280;
+      --border: #e5e7eb;
+      --success: #059669;
+      --card-bg: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: #f3f4f6;
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .receipt-container {
+      background: var(--card-bg);
+      max-width: 500px;
+      width: 100%;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #1e3a8a, #2563eb);
+      color: white;
+      padding: 28px;
+      text-align: center;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+    }
+
+    .tagline {
+      font-size: 13px;
+      opacity: 0.9;
+      font-weight: 400;
+    }
+
+    .token-display {
+      background: var(--primary-light);
+      margin: 24px;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      border: 2px dashed #93c5fd;
+    }
+
+    .token-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+
+    .token-number {
+      font-size: 44px;
+      font-weight: 800;
+      color: #1e3a8a;
+      font-family: "Courier New", Courier, monospace;
+      letter-spacing: 2px;
+    }
+
+    .details-table {
+      width: 100%;
+      padding: 0 24px 20px 24px;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    .row:last-child {
+      border-bottom: none;
+    }
+
+    .label {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .value {
+      font-weight: 600;
+      color: var(--text);
+      text-align: right;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .footer {
+      background: #f9fafb;
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      padding: 0 24px 24px 24px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      text-align: center;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      border: none;
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+    .btn-secondary:hover {
+      background: #d1d5db;
+    }
+
+    .error-box {
+      padding: 32px;
+      text-align: center;
+      color: #dc2626;
+    }
+
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      .receipt-container {
+        box-shadow: none;
+        border: 1px solid #ccc;
+      }
+      .actions {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="receipt-container">
+    <div class="header">
+      <div class="logo">QueueLess</div>
+      <div class="tagline">Smart Appointment & Digital Queue Management</div>
+    </div>
+
+    <% if (error) { %>
+      <div class="error-box">
+        <h3>Receipt Not Found</h3>
+        <p><%= error %></p>
+      </div>
+      <div class="actions">
+        <a href="javascript:history.back()" class="btn btn-secondary">Go Back</a>
+      </div>
+    <% } else { %>
+      <div class="token-display">
+        <div class="token-label">Digital Queue Token</div>
+        <div class="token-number"><%= appointment.tokenNumber %></div>
+      </div>
+
+      <div class="details-table">
+        <div class="row">
+          <span class="label">Booking Reference:</span>
+          <span class="value" style="font-family: monospace;"><%= appointment.bookingReference %></span>
+        </div>
+        <div class="row">
+          <span class="label">Service Name:</span>
+          <span class="value"><%= appointment.service ? appointment.service.name : 'Administrative Service' %></span>
+        </div>
+        <div class="row">
+          <span class="label">Counter Assigned:</span>
+          <span class="value"><%= appointment.service ? appointment.service.counterName : 'Counter 1' %></span>
+        </div>
+        <div class="row">
+          <span class="label">Student Name:</span>
+          <span class="value"><%= appointment.user ? appointment.user.name : 'Valued Student' %></span>
+        </div>
+        <% if (appointment.user && appointment.user.studentId) { %>
+          <div class="row">
+            <span class="label">Student ID:</span>
+            <span class="value"><%= appointment.user.studentId %></span>
+          </div>
+        <% } %>
+        <div class="row">
+          <span class="label">Appointment Date:</span>
+          <span class="value"><%= appointment.appointmentDate %></span>
+        </div>
+        <div class="row">
+          <span class="label">Scheduled Time Slot:</span>
+          <span class="value"><%= appointment.timeSlot %></span>
+        </div>
+        <div class="row">
+          <span class="label">Current Status:</span>
+          <span class="value">
+            <span class="status-badge"><%= appointment.status %></span>
+          </span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" onclick="window.print()">Print Official Receipt</button>
+        <button class="btn btn-secondary" onclick="window.close()">Close</button>
+      </div>
+
+      <div class="footer">
+        Generated on <%= generatedAt %> • EJS Server-Side Rendered Receipt
+      </div>
+    <% } %>
+  </div>
+
+</body>
+</html>
