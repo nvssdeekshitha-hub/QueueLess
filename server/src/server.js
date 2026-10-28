@@ -3,6 +3,8 @@ dotenv.config();
 
 import app from './app.js';
 import { connectDB, disconnectDB } from './config/db.js';
+import Service from './models/Service.js';
+import seedDatabase from '../scripts/seed.js';
 
 const PORT = process.env.PORT || 5000;
 
@@ -11,6 +13,13 @@ const startServer = async () => {
   try {
     await connectDB();
     console.log(`[Database] Database connection initialized.`);
+
+    // If database is empty, auto-seed demo dataset
+    const serviceCount = await Service.countDocuments();
+    if (serviceCount === 0) {
+      console.log(`[Server] Fresh database detected. Auto-seeding university demo records...`);
+      await seedDatabase(false);
+    }
   } catch (error) {
     console.error(`[Database Warning] Continuing server startup in offline/diagnostic mode: ${error.message}`);
   }

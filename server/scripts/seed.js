@@ -8,7 +8,7 @@ import Appointment from '../src/models/Appointment.js';
 import QueueAudit from '../src/models/QueueAudit.js';
 import { connectDB, disconnectDB } from '../src/config/db.js';
 
-const seedDatabase = async () => {
+const seedDatabase = async (closeConnection = true) => {
   try {
     await connectDB();
     console.log('[Seed] Connected to database. Starting idempotent seed process...');
@@ -288,9 +288,16 @@ const seedDatabase = async () => {
   } catch (error) {
     console.error('[Seed Error]:', error);
   } finally {
-    await disconnectDB();
-    process.exit(0);
+    if (closeConnection) {
+      await disconnectDB();
+      process.exit(0);
+    }
   }
 };
 
-seedDatabase();
+export default seedDatabase;
+
+// Run directly if called as a script
+if (process.argv[1] && process.argv[1].replace(/\\/g, '/').endsWith('scripts/seed.js')) {
+  seedDatabase(true);
+}
